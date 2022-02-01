@@ -12,6 +12,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TicketDAO {
 
@@ -36,11 +38,13 @@ public class TicketDAO {
             logger.error("Error fetching next available slot",ex);
         }finally {
             dataBaseConfig.closeConnection(con);
-            return false;
         }
+        return false;
+        
     }
 
     public Ticket getTicket(String vehicleRegNumber) {
+    	
         Connection con = null;
         Ticket ticket = null;
         try {
@@ -50,6 +54,8 @@ public class TicketDAO {
             ps.setString(1,vehicleRegNumber);
             ResultSet rs = ps.executeQuery();
             if(rs.next()){
+            	
+            	
                 ticket = new Ticket();
                 ParkingSpot parkingSpot = new ParkingSpot(rs.getInt(1), ParkingType.valueOf(rs.getString(6)),false);
                 ticket.setParkingSpot(parkingSpot);
@@ -65,8 +71,9 @@ public class TicketDAO {
             logger.error("Error fetching next available slot",ex);
         }finally {
             dataBaseConfig.closeConnection(con);
-            return ticket;
         }
+        return ticket;
+  
     }
 
     public boolean updateTicket(Ticket ticket) {
@@ -85,5 +92,30 @@ public class TicketDAO {
             dataBaseConfig.closeConnection(con);
         }
         return false;
+    }
+    
+    public int getReccurentUser(String vehicleRegNumber) {
+    	Connection con = null;
+		Ticket ticket = null;
+		List<Ticket> nbTicket = new ArrayList<Ticket>();
+		try {
+			con = dataBaseConfig.getConnection();
+			PreparedStatement ps = con.prepareStatement(DBConstants.GET_RECURRENT_USER);
+			// VEHICLE_REG_NUMBER
+			ps.setString(1, vehicleRegNumber);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				ticket = new Ticket();
+				ticket.setVehicleRegNumber(vehicleRegNumber);
+				nbTicket.add(ticket);
+			}
+			dataBaseConfig.closeResultSet(rs);
+			dataBaseConfig.closePreparedStatement(ps);
+		} catch (Exception ex) {
+			logger.error("Error identification user", ex);
+		} finally {
+			dataBaseConfig.closeConnection(con);
+		}
+		return  nbTicket.size();
     }
 }

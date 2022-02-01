@@ -37,6 +37,11 @@ public class ParkingService {
 
                 Date inTime = new Date();
                 Ticket ticket = new Ticket();
+                
+                //Welcome Regular user
+                if (ticketDAO.getReccurentUser(vehicleRegNumber) > 1) {
+					System.out.println("WELCOME ! As a recurring user you'll benefit from a 5% discount.");
+				}
                 //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
                 //ticket.setId(ticketID);
                 ticket.setParkingSpot(parkingSpot);
@@ -117,4 +122,6 @@ public class ParkingService {
             logger.error("Unable to process exiting vehicle",e);
         }
     }
+    
+
 }

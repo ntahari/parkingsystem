@@ -5,6 +5,7 @@ import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.FareCalculatorService;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -123,5 +124,45 @@ public class FareCalculatorServiceTest {
         fareCalculatorService.calculateFare(ticket);
         assertEquals( (24 * Fare.CAR_RATE_PER_HOUR) , ticket.getPrice());
     }
+    
+    @Test
+    public void calculateFareWithLessThanThirtyMinutes() {
+    	Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (  15 * 60 * 1000) ); //15 minutes parking time should give free parking fare
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket);
+        assertEquals( (0.25 * Fare.RATE_PER_THIRTY_MINUTES) , ticket.getPrice());
+    }
+        
+        @Test
+        public void calculateFareForRecurrentUser() {
+        	Date inTime = new Date();
+            inTime.setTime( System.currentTimeMillis() - (  45 * 60 * 1000) );//45 minutes parking time should give 3/4th parking fare
+            Date outTime = new Date();
+            ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+
+            ticket.setVehicleRegNumber("ABCDEF");
+            ticket.setInTime(inTime);
+            ticket.setOutTime(outTime);
+            ticket.setParkingSpot(parkingSpot);
+           
+            System.out.println(ticket);
+            
+
+            fareCalculatorService.calculateFare(ticket);
+            assertEquals( (0.75 * Fare.CAR_RATE_PER_HOUR * Fare.DISCOUNT_FIVE_PERCENT) , ticket.getPrice());
+    	
+            
+    }
+
+		@Override
+		public String toString() {
+			return "FareCalculatorServiceTest [ticket=" + ticket + "]";
+		}
 
 }
