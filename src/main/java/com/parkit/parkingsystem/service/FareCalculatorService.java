@@ -1,5 +1,8 @@
 package com.parkit.parkingsystem.service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.model.Ticket;
@@ -9,47 +12,59 @@ public class FareCalculatorService {
 
 
 	public void calculateFare(Ticket ticket){
-		if( (ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime())) ){
+		if( (ticket.getOutTime() == null) || (ticket.getOutTime().isBefore(ticket.getInTime())) ){
 			throw new IllegalArgumentException("Out time provided is incorrect:"+ticket.getOutTime().toString());
 		}
 
 		//get time in minutes
-		double inHour = ticket.getInTime().getTime() / (1000 * 60);
-		double outHour = ticket.getOutTime().getTime() / (1000 * 60);
-
-
+		LocalDateTime inHour = ticket.getInTime();
+		LocalDateTime outHour = ticket.getOutTime();
 
 		//TODO: Some tests are failing here. Need to check if this logic is correct
-		// convert duration on hour
-		double duration = (outHour - inHour) / 60;
 
+		Duration duration = Duration.between(inHour, outHour);
+		long durationSec = duration.getSeconds();
+		// convert duration on hour
+		double durationInHour = (double) durationSec / 3600;
+		
 		TicketDAO ticketDao = new TicketDAO();
 		String vehicleRegNumber = ticket.getVehicleRegNumber();
+		double priceForCar = durationInHour * Fare.CAR_RATE_PER_HOUR;
+		double priceForBike = durationInHour * Fare.BIKE_RATE_PER_HOUR;
 
-		// set free fare if duration is less than 30 minutes
-		if (duration < 0.5) {
-			ticket.setPrice(duration * Fare.RATE_PER_THIRTY_MINUTES);
-		} else {
-			switch (ticket.getParkingSpot().getParkingType()){
-			case CAR: {
-
-				System.out.println("nombre :" + ticketDao.getReccurentUser(vehicleRegNumber));
+		switch (ticket.getParkingSpot().getParkingType()){
+		case CAR: {
+			// set free fare if duration is less than 30 minutes
+			if (durationInHour < 0.5) {
+				ticket.setPrice(durationInHour * Fare.RATE_PER_THIRTY_MINUTES);
 				// if ticket's number is superior than 1 then the user is recurring
-				if (ticketDao.getReccurentUser(vehicleRegNumber) > 1) {
-
-					System.out.println("5% discount has been applied");
-					ticket.setPrice(duration * Fare.CAR_RATE_PER_HOUR * Fare.DISCOUNT_FIVE_PERCENT);
-				}
-				ticket.setPrice(duration * Fare.CAR_RATE_PER_HOUR);
-				break;
-
+			} else if (ticketDao.getReccurentUser(vehicleRegNumber) > 1) {
+				System.out.println("5% discount has been applied");
+				System.out.println("nombre de ticket = "+ticketDao.getReccurentUser(vehicleRegNumber));
+				ticket.setPrice(priceForCar* Fare.DISCOUNT_FIVE_PERCENT);
+			} else {
+				ticket.setPrice(priceForCar);
 			}
-			case BIKE: {
-				ticket.setPrice(duration * Fare.BIKE_RATE_PER_HOUR);
-				break;
-			}
-			default: throw new IllegalArgumentException("Unkown Parking Type");
-			}
+			break;
 		}
+		case BIKE: {
+			// set free fare if duration is less than 30 minutes
+			if (durationInHour < 0.5) {
+				ticket.setPrice(durationInHour * Fare.RATE_PER_THIRTY_MINUTES);
+				// if ticket's number is superior than 1 then the user is recurring
+			} else if (ticketDao.getReccurentUser(vehicleRegNumber) > 1) {
+
+				System.out.println("5% discount has been applied");
+				System.out.println("la duration = " + durationInHour);
+				System.out.println("nombre de ticket = "+ticketDao.getReccurentUser(vehicleRegNumber));
+				ticket.setPrice(priceForBike * Fare.DISCOUNT_FIVE_PERCENT);
+			} else {
+				ticket.setPrice(priceForBike);
+			}
+			break;
+		}
+		default: throw new IllegalArgumentException("Unkown Parking Type");
+		}
+
 	}
 }

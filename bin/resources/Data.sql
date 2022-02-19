@@ -45,9 +45,6 @@ create table ticket(
  FOREIGN KEY (PARKING_NUMBER)
  REFERENCES parking(PARKING_NUMBER));
 
- insert into ticket(PARKING_NUMBER,VEHICLE_REG_NUMBER,PRICE,IN_TIME,OUT_TIME) values(1,'ABCDEF'
-,0,'2022-02-01 12:32:20');
- 
 insert into parking(PARKING_NUMBER,AVAILABLE,TYPE) values(1,true,'CAR');
 insert into parking(PARKING_NUMBER,AVAILABLE,TYPE) values(2,true,'CAR');
 insert into parking(PARKING_NUMBER,AVAILABLE,TYPE) values(3,true,'CAR');
