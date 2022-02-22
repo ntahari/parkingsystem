@@ -37,11 +37,12 @@ public class FareCalculatorService {
 			// set free fare if duration is less than 30 minutes
 			if (durationInHour < 0.5) {
 				ticket.setPrice(durationInHour * Fare.RATE_PER_THIRTY_MINUTES);
+			
 				// if ticket's number is superior than 1 then the user is recurring
 			} else if (ticketDao.getReccurentUser(vehicleRegNumber) > 1) {
 				System.out.println("5% discount has been applied");
-				System.out.println("nombre de ticket = "+ticketDao.getReccurentUser(vehicleRegNumber));
-				ticket.setPrice(priceForCar* Fare.DISCOUNT_FIVE_PERCENT);
+				
+				ticket.setPrice(priceForCar * Fare.DISCOUNT_FIVE_PERCENT);
 			} else {
 				ticket.setPrice(priceForCar);
 			}
@@ -51,13 +52,12 @@ public class FareCalculatorService {
 			// set free fare if duration is less than 30 minutes
 			if (durationInHour < 0.5) {
 				ticket.setPrice(durationInHour * Fare.RATE_PER_THIRTY_MINUTES);
-				// if ticket's number is superior than 1 then the user is recurring
+				
+			// if ticket's number is superior than 1 then the user is recurring
 			} else if (ticketDao.getReccurentUser(vehicleRegNumber) > 1) {
-
 				System.out.println("5% discount has been applied");
-				System.out.println("la duration = " + durationInHour);
-				System.out.println("nombre de ticket = "+ticketDao.getReccurentUser(vehicleRegNumber));
 				ticket.setPrice(priceForBike * Fare.DISCOUNT_FIVE_PERCENT);
+			
 			} else {
 				ticket.setPrice(priceForBike);
 			}
