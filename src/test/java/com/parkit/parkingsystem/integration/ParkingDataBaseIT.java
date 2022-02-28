@@ -21,11 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
 
-import java.sql.Date;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -61,25 +58,24 @@ public class ParkingDataBaseIT {
 
     }
 
-    @Test
+    @Test 
     public void testParkingACar(){
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         parkingService.processIncomingVehicle();
         //TODO: check that a ticket is actualy saved in DB and Parking table is updated with availability
         
-        Ticket ticket = ticketDAO.getTicket("ABCDEF");
+        Ticket ticket = ticketDAO.getTicket("ABCDEF"); 
         assertThat(ticket).isNotNull();
         assertThat(ticket.getVehicleRegNumber()).isEqualTo("ABCDEF");
         assertThat(ticket.getParkingSpot().isAvailable()).isEqualTo(false);
-        //inTime.setTime( System.currentTimeMillis() - (  45 * 60 * 1000) );//45 minutes parking time should give 3/4th parking fare
         
     }
 
     @Test
     public void testParkingLotExit(){
     	//testParkingACar();
-//        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-//        parkingService.processIncomingVehicle();
+    	//ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+    	//parkingService.processIncomingVehicle();
         
         //TODO: check that the fare generated and out time are populated correctly in the database;
             
@@ -91,7 +87,6 @@ public class ParkingDataBaseIT {
         ticket.setInTime(inTime);
         //ticket.setOutTime(null);
         ticketDAO.saveTicket(ticket); 
-        
         
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         parkingService.processExitingVehicle();

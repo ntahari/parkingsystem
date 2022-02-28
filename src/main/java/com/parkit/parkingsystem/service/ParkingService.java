@@ -38,7 +38,7 @@ public class ParkingService {
 
               //Welcome Regular user
                 if (ticketDAO.getReccurentUser(vehicleRegNumber) > 1) {
-					System.out.println("WELCOME ! As a recurring user you'll benefit from a 5% discount.");
+					System.out.println("Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount.");
 				}
                 
                 LocalDateTime inTime = LocalDateTime.now(ZoneId.systemDefault());

@@ -70,6 +70,8 @@ public class ParkingServiceTest {
         verify(ticketDAO, times(2)).getTicket("ABCDEF");
         verify(ticketDAO, times(2)).updateTicket(any(Ticket.class));
         verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
+        assertThat(ticketDAO.getTicket("ABCDEF")).isNotNull();
+        assertThat(ticketDAO.getTicket("ABCDEF").getParkingSpot().isAvailable()).isTrue();
         
     }
 

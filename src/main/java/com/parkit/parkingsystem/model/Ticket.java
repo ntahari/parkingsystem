@@ -59,9 +59,7 @@ public class Ticket {
     }
     
     @Override
-    public String toString() {
-    	// TODO Auto-generated method stub
-    	
+    public String toString() {    	
     	return  "numerp vehicule = " + this.vehicleRegNumber +"\n" 
 		    	+"out Time = " +this.outTime+"\n"
 		    	+ "price = "+this.price;
